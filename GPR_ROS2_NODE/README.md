@@ -1,52 +1,51 @@
-````markdown
+
+---
+
 # GPR ROS 2 Streamer
 
 A ROS 2 node that connects to a COBRA Ground Penetrating Radar (GPR) device over TCP, receives radar traces, builds a rolling B-scan image, and publishes it to a ROS topic.
 
----
-
 ## Table of Contents
 
-- [Description](#description)  
-- [Features](#features)  
-- [Requirements](#requirements)  
-- [Installation](#installation)  
-- [Usage](#usage)  
-- [ROS Topic](#ros-topic)  
-- [How It Works](#how-it-works)  
-- [Contributing](#contributing)  
-- [License](#license)
+* [Description](#description)
+* [Features](#features)
+* [Requirements](#requirements)
+* [Installation](#installation)
+* [Usage](#usage)
+* [ROS Topic](#ros-topic)
+* [How It Works](#how-it-works)
+* [Contributing](#contributing)
 
 ---
 
 ## Description
 
-This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`.  
-It configures the device, reads radar traces continuously, and builds a rolling image of the scan.  
+This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`.
+It configures the device, reads radar traces continuously, and builds a rolling image of the scan.
 The image is converted to 8-bit grayscale and published as a ROS 2 `sensor_msgs/Image` on the `/gpr/bscan` topic.
 
 ---
 
 ## Features
 
-- Connects to GPR over TCP  
-- Sends device setup command  
-- Receives 1024-sample traces  
-- Builds a 1000-frame rolling image  
-- Publishes as `mono8` image at ~30 Hz  
-- Uses background thread for I/O  
-- Publishes to `/gpr/bscan`
+* Connects to GPR over TCP
+* Sends device setup command
+* Receives 1024-sample traces
+* Builds a 1000-frame rolling image
+* Publishes as `mono8` image at \~30 Hz
+* Uses background thread for I/O
+* Publishes to `/gpr/bscan`
 
 ---
 
 ## Requirements
 
-- ROS 2 Foxy or newer  
-- Python 3.6+  
-- `rclpy`  
-- `cv_bridge`  
-- `numpy`  
-- `opencv-python`
+* ROS 2 Foxy or newer
+* Python 3.6+
+* `rclpy`
+* `cv_bridge`
+* `numpy`
+* `opencv-python`
 
 ---
 
@@ -64,7 +63,7 @@ pip install numpy opencv-python
 # Then build the ROS 2 workspace (if applicable)
 colcon build --packages-select gpr_ros2_node
 source install/setup.bash
-````
+```
 
 ---
 
