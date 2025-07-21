@@ -1,3 +1,4 @@
+````markdown
 # GPR ROS 2 Streamer
 
 A ROS 2 node that connects to a COBRA Ground Penetrating Radar (GPR) device over TCP, receives radar traces, builds a rolling B-scan image, and publishes it to a ROS topic.
@@ -53,57 +54,63 @@ This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`. I
 ```bash
 git clone https://github.com/Phreekls7/GPR_Jetson.git
 cd GPR_Jetson
-Install dependencies (if not already):
+````
 
-bash
-Copiază
-Editează
+2. Install dependencies (if not already):
+
+```bash
 pip install numpy opencv-python
-Make sure cv_bridge is available (usually part of your ROS 2 workspace).
+```
 
-Build the package (if used inside a ROS 2 workspace):
+3. Make sure `cv_bridge` is available (usually part of your ROS 2 workspace).
 
-bash
-Copiază
-Editează
+4. Build the package (if used inside a ROS 2 workspace):
+
+```bash
 colcon build --packages-select gpr_ros2_node
 source install/setup.bash
-Usage
+```
+
+---
+
+## Usage
+
 Start the node:
 
-bash
-Copiază
-Editează
+```bash
 ros2 run gpr_ros2_node gpr_ros2_streamer.py
-Make sure the COBRA GPR is connected and powered on with IP 192.168.0.10.
+```
 
-ROS Topic
+Make sure the COBRA GPR is connected and powered on with IP `192.168.0.10`.
+
+---
+
+## ROS Topic
+
 This node publishes:
 
-/gpr/bscan — sensor_msgs/Image
-A grayscale image where each column is a GPR trace. The image scrolls left with new incoming data.
+* `/gpr/bscan` — `sensor_msgs/Image`
+  A grayscale image where each column is a GPR trace. The image scrolls left with new incoming data.
 
-How It Works
-Connects to the GPR device using TCP.
+---
 
-Sends a setup message based on trace quantity and range.
+## How It Works
 
-Reads raw trace data from the socket.
+* Connects to the GPR device using TCP.
+* Sends a setup message based on trace quantity and range.
+* Reads raw trace data from the socket.
+* Each trace is placed into a 2D buffer.
+* Converts that buffer into an 8-bit image.
+* A timer publishes the image via ROS at \~30 Hz.
 
-Each trace is placed into a 2D buffer.
+---
 
-Converts that buffer into an 8-bit image.
+## Contributing
 
-A timer publishes the image via ROS at ~30 Hz.
-
-Contributing
 To contribute:
 
-Fork the repo
-
-Create a new branch
-
-Make your changes
-
-Submit a pull request
-
+1. Fork the repo
+2. Create a new branch
+3. Make your changes
+4. Submit a pull request
+```
