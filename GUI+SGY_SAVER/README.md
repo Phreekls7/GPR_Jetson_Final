@@ -2,7 +2,7 @@
 
 # GPR ROS 2 GUI + SEG-Y Saver
 
-A ROS 2-based system with two main parts:
+A ROS 2-based system with two main parts
 
 A real-time PyQt5 GUI that shows drone telemetry and GPR data
 A background node that saves GPR traces to a `.sgy` file on shutdown
