@@ -15,12 +15,15 @@ A ROS 2 node that connects to a COBRA Ground Penetrating Radar (GPR) device over
 - [ROS Topic](#ros-topic)  
 - [How It Works](#how-it-works)  
 - [Contributing](#contributing)  
+- [License](#license)
 
 ---
 
 ## Description
 
-This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`. It configures the device, reads radar traces continuously, and builds a rolling image of the scan. The image is converted to 8-bit grayscale and published as a ROS 2 `sensor_msgs/Image` on the `/gpr/bscan` topic.
+This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`.  
+It configures the device, reads radar traces continuously, and builds a rolling image of the scan.  
+The image is converted to 8-bit grayscale and published as a ROS 2 `sensor_msgs/Image` on the `/gpr/bscan` topic.
 
 ---
 
@@ -31,8 +34,8 @@ This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`. I
 - Receives 1024-sample traces  
 - Builds a 1000-frame rolling image  
 - Publishes as `mono8` image at ~30 Hz  
-- Runs a background thread for I/O  
-- Publishes image on `/gpr/bscan`
+- Uses background thread for I/O  
+- Publishes to `/gpr/bscan`
 
 ---
 
@@ -49,39 +52,30 @@ This script connects to a COBRA GPR device at IP `192.168.0.10` and port `23`. I
 
 ## Installation
 
-1. Clone the repository:
-
 ```bash
+# Clone the repository
 git clone https://github.com/Phreekls7/GPR_Jetson.git
 cd GPR_Jetson
-````
 
-2. Install dependencies (if not already):
-
-```bash
+# Install Python dependencies
 pip install numpy opencv-python
-```
 
-3. Make sure `cv_bridge` is available (usually part of your ROS 2 workspace).
-
-4. Build the package (if used inside a ROS 2 workspace):
-
-```bash
+# Make sure cv_bridge is sourced from your ROS workspace
+# Then build the ROS 2 workspace (if applicable)
 colcon build --packages-select gpr_ros2_node
 source install/setup.bash
-```
+````
 
 ---
 
 ## Usage
 
-Start the node:
-
 ```bash
+# Run the streamer node
 ros2 run gpr_ros2_node gpr_ros2_streamer.py
 ```
 
-Make sure the COBRA GPR is connected and powered on with IP `192.168.0.10`.
+Make sure your COBRA GPR is powered on and connected at `192.168.0.10`.
 
 ---
 
@@ -90,22 +84,25 @@ Make sure the COBRA GPR is connected and powered on with IP `192.168.0.10`.
 This node publishes:
 
 * `/gpr/bscan` — `sensor_msgs/Image`
-  A grayscale image where each column is a GPR trace. The image scrolls left with new incoming data.
+  A grayscale B-scan image where each column is one radar trace.
+  The image scrolls left as new data arrives.
 
 ---
 
 ## How It Works
 
-* Connects to the GPR device using TCP.
-* Sends a setup message based on trace quantity and range.
-* Reads raw trace data from the socket.
-* Each trace is placed into a 2D buffer.
-* Converts that buffer into an 8-bit image.
-* A timer publishes the image via ROS at \~30 Hz.
+* Opens TCP socket to COBRA GPR at `192.168.0.10:23`
+* Sends setup message for 1024-sample traces with 100 ns range
+* Reads and parses raw traces (skipping service channel)
+* Appends each trace as a new column to a fixed-width 2D NumPy array
+* Converts that array into 8-bit grayscale (`mono8`)
+* Publishes images via ROS 2 at \~30 Hz using a timer callback
 
 ---
 
 ## Contributing
+
+Pull requests are welcome.
 
 To contribute:
 
@@ -113,4 +110,3 @@ To contribute:
 2. Create a new branch
 3. Make your changes
 4. Submit a pull request
-```
