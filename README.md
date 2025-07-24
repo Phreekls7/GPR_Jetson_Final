@@ -1,5 +1,4 @@
 
-
 ---
 
 # GPR Jetson Project
@@ -137,7 +136,15 @@ Test/demo only — not meant for deployment.
 ## Notes
 
 * Make sure the GPR is connected via Ethernet and reachable at `192.168.0.10`.
-* Ensure PX4 is publishing the required topics.
+* PX4 must be configured to publish `vehicle_odometry` and `distance_sensor` data via DDS.
+* Enable `MAV_ODOM_LP` and `MAV_DIST_LP` in PX4 firmware, or the appropriate modules for micro XRCE-DDS.
+* Make sure the **micro XRCE-DDS Agent** is running on your Jetson:
+
+```bash
+micrortps_agent -t UDP
+```
+
+* If using PX4-SITL, launch the agent with `-t UDP` and `-p 8888` or appropriate port.
 * GUI and SEG-Y saver can run at the same time.
 * Test script (`flight_path_post.py`) is not integrated — it runs separately for debug or demo.
 
@@ -153,4 +160,5 @@ To contribute:
 4. Open a pull request
 
 ---
+
 
