@@ -1,4 +1,5 @@
 
+
 ---
 
 # GPR Jetson Project
@@ -15,6 +16,7 @@ This ROS 2-based project provides tools for collecting, visualizing, and saving 
 * [Installation](#installation)
 * [How to Use](#how-to-use)
 * [ROS Topics](#ros-topics)
+* [PX4 Setup](#px4-setup)
 * [Notes](#notes)
 * [Contributing](#contributing)
 
@@ -133,20 +135,70 @@ Test/demo only — not meant for deployment.
 
 ---
 
+## PX4 Setup
+
+To enable PX4 to publish odometry and distance sensor data to ROS 2, follow the PX4 ROS 2 user guide:
+[https://docs.px4.io/main/en/ros2/user\_guide.html#setup-the-agent](https://docs.px4.io/main/en/ros2/user_guide.html#setup-the-agent)
+
+### 1. Install ROS 2 bridge tools
+
+Follow the PX4 documentation to set up ROS 2 integration.
+
+### 2. Enable `DistanceSensor` in the firmware
+
+Edit the PX4 file:
+
+```
+PX4-Autopilot/src/modules/micrortps_bridge/micrortps_bridge_topics.yaml
+```
+
+Add `DistanceSensor.msg` to the list of outgoing topics:
+
+```yaml
+outgoing:
+  - DistanceSensor
+  - VehicleOdometry
+```
+
+### 3. Rebuild PX4 firmware
+
+```bash
+make px4_fmu-v5x_default
+```
+
+Then flash the firmware to the drone.
+
+### 4. Start the Micro XRCE-DDS Agent
+
+On the Jetson or ROS 2 computer:
+
+```bash
+MicroXRCEAgent udp4 -p 8888
+```
+
+This connects PX4's RTPS bridge to ROS 2 DDS.
+
+### 5. Verify topics
+
+Check that these topics appear in ROS 2:
+
+```bash
+ros2 topic list
+```
+
+You should see:
+
+* `/fmu/out/vehicle_odometry`
+* `/fmu/out/distance_sensor`
+
+---
+
 ## Notes
 
 * Make sure the GPR is connected via Ethernet and reachable at `192.168.0.10`.
-* PX4 must be configured to publish `vehicle_odometry` and `distance_sensor` data via DDS.
-* Enable `MAV_ODOM_LP` and `MAV_DIST_LP` in PX4 firmware, or the appropriate modules for micro XRCE-DDS.
-* Make sure the **micro XRCE-DDS Agent** is running on your Jetson:
-
-```bash
-micrortps_agent -t UDP
-```
-
-* If using PX4-SITL, launch the agent with `-t UDP` and `-p 8888` or appropriate port.
 * GUI and SEG-Y saver can run at the same time.
-* Test script (`flight_path_post.py`) is not integrated — it runs separately for debug or demo.
+* Test script (`flight_path_post.py`) runs separately.
+* PX4 firmware must publish both odometry and distance sensor data.
 
 ---
 
